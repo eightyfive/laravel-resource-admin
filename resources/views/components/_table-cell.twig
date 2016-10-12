@@ -1,0 +1,31 @@
+
+{% if isDate %}
+  {% set val = val|date('D j M') ~ '&nbsp;<small>' ~ val|date('h:i A') ~ '</small>' %}
+{% elseif isPercentage %}
+  {% set val = val ~ '%' %}
+{% elseif isPrice %}
+  {% set val = '฿' ~ val|number_format %}
+{% elseif isLabel %}
+  {% set val = '<span class="ui small ' ~ color ~ ' label">' ~ val ~ '</span>' %}
+{% elseif isBoolean %}
+  {% if val %}
+    {% set val = '<i class="checkmark icon"></i>' %}
+  {% else %}
+    {% set val = '<i class="remove icon"></i>' %}
+  {% endif %}
+{% else %}
+  {% set val = val|default('-') %}
+{% endif %}
+
+{% if icon is defined %}
+  {% set val = val ~ '&nbsp;<i class="' ~ icon ~ ' icon"></i>' %}
+{% endif %}
+
+<td{% if isActive %} class="warning"{% endif %}>
+{% if url %}
+<a title="{{ val }}" href="{{ url }}">
+  {{ val|raw }}</a>
+{% else %}
+  {{ val|raw }}
+{% endif %}
+</td>

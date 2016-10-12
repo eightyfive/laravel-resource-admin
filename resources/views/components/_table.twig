@@ -1,0 +1,81 @@
+
+{% set nextOrderDir = orderDir == 'asc' ? 'desc' : 'asc' %}
+
+
+{% block before '' %}
+
+{% if models|length %}
+
+<table id="{{ resource_slug }}Index" class="ui {% block className '' %} celled table">
+  <thead>
+    <tr>
+      {% block thead %}
+      {% for col in columns %}
+        {% set colId = resource_slug ~ 'IndexCol' ~ col|capitalize %}
+        {% set colSortUrl = url_index ~ '?page=1&order=' ~ col ~ '&dir=' ~ (col == orderBy ? nextOrderDir : 'asc')  %}
+        {% set colTransKey = 'radmin::columns.' ~ col %}
+        {% set colName = trans(colTransKey) %}
+        {% if colName == colTransKey %}
+          {% set colName = col|capitalize %}
+        {% endif %}
+        {% set isAscending = col == orderBy and orderDir == 'asc' %}
+        {% set isDescending = col == orderBy and orderDir == 'desc' %}
+
+      <th id="{{ colId }}">
+        {% if not noSort %}
+        <a href="{{ colSortUrl }}">
+          {{ colName }}
+          {% if isAscending %}
+          <i class="sort ascending icon"></i>
+          {% elseif isDescending %}
+          <i class="sort descending icon"></i>
+          {% endif %}
+        </a>
+        {% else %}
+        {{ colName }}
+        {% endif %}
+      </th>
+      {% endfor %}
+      {% if actions|length %}
+      <th></th>
+      {% endif %}
+      {% endblock %}
+    </tr>
+  </thead>
+  <tbody>
+    {% block tbody %}
+
+      {% for model in models %}
+      <tr>
+        {% for col in columns %}
+          {% if loop.first and route_edit %}
+            {% set urlEdit = route(route_edit, routeParams|merge({('' ~ resource_slug ~ ''): model.getKey() })) %}
+          {% else %}
+            {% set urlEdit = false %}
+          {% endif %}
+
+          {% include 'radmin::components/_table-cell' with {
+            val: model.getAttribute(col),
+            isActive: col == orderBy,
+            url: urlEdit,
+            isDate: (col in dates)
+          } only %}
+        {% endfor %}
+        {% if actions|length %}
+        <td>
+          {% for action,route_name in actions %}
+            {% set urlAction = route(route_name, routeParams|merge({('' ~ resource_slug ~ ''): model.getKey() })) %}
+
+            <a href="{{ urlAction }}">
+              {{ action|capitalize }}</a>
+          {% endfor %}
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+
+    {% endblock %}
+  </tbody>
+</table>
+
+{% endif %}

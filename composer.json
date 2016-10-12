@@ -1,0 +1,23 @@
+{
+    "name": "eightyfive/laravel-resource-admin",
+    "description": "Generic Admin controller for Laravel Resources",
+    "license": "None",
+    "authors": [
+        {
+            "name": "Benoit Sagols",
+            "email": "benoit.sagols@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "illuminate/support": "^5.2",
+        "kris/laravel-form-builder": "1.9.*",
+    },
+    "autoload": {
+        "psr-4": {
+            "Eyf\\Admin": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

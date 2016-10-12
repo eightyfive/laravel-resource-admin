@@ -1,0 +1,45 @@
+{% extends 'radmin::layout' %}
+
+{# DEFAULTS #}
+{% if tableView is not defined %}
+  {% set tableView = 'radmin::components/_table' %}
+{% endif %}
+{% if showTitle is not defined %}
+  {% set showTitle = true %}
+{% endif %}
+
+{# VARS #}
+{% set isPaginator = models.currentPage %}
+{% if isPaginator %}
+  {% set _from = (models.currentPage - 1) * models.perPage + 1 %}
+  {% set _to = min(models.count(), models.currentPage * models.perPage) %}
+{% endif %}
+
+{% block meta_title %}
+  {{ title }}
+{% endblock %}
+
+
+{% block content %}
+  {% if showTitle %}
+  <h1 class="ui dividing header">
+    {{ title }}
+    {% if isPaginator %}
+      <span class="ui horizontal label">{{ _from }}–{{ _to }} of {{ models.total }}</span>
+    {% endif %}
+  </h1>
+  {% endif %}
+  {% if models|length %}
+    {% include tableView %}
+    {% if isPaginator %}
+      {{ models.links('radmin::components/_pagination')|raw }}
+    {% endif %}
+  {% else %}
+  <div class="ui warning message">
+    <div class="header">
+      {{ trans('radmin::messages.no_resource_found', {resource_singular: resource_singular}) }}
+    </div>
+  </div>
+  {% endif %}
+
+{% endblock %}

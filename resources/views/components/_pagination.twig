@@ -1,0 +1,41 @@
+
+{% if paginator.total > paginator.perPage %}
+<div class="ui hidden divider"></div>
+
+<div class="ui centered grid">
+  <div class="ui pagination menu">
+  {# Previous Page Link #}
+  {% if paginator.onFirstPage() %}
+    <div class="disabled item">&larr;</div>
+  {% else %}
+    <a class="item" href="{{ paginator.previousPageUrl() }}">&larr;</a>
+  {% endif %}
+
+  {# Pagination Elements #}
+  {% for element in elements %}
+    {# "Three Dots" Separator #}
+    {% if element is not iterable %}
+    <div class="disabled item">{{ element }}</div>
+    {% endif %}
+
+    {# Array Of Links #}
+    {% if element is iterable %}
+      {% for page,url in element %}
+        {% if page == paginator.currentPage() %}
+    <div class="active item">{{ page }}</div>
+        {% else %}
+    <a class="item" href="{{ url }}">{{ page }}</a>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+
+      {# Next Page Link #}
+      {% if paginator.hasMorePages() %}
+    <a class="item" href="{{ paginator.nextPageUrl() }}">&rarr;</a>
+      {% else %}
+    <div class="disabled item">&rarr;</div>
+      {% endif %}
+  </div>
+</div>
+{% endif %}

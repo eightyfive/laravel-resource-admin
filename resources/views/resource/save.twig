@@ -1,0 +1,11 @@
+{% extends 'radmin::layout' %}
+
+{% block meta_title %}
+  {{ title }}
+{% endblock %}
+
+{% block content %}
+{{ form_start(form)|raw }}
+  {{ form_until(form, 'submit')|raw }}
+{{ form_end(form, false)|raw }}
+{% endblock %}

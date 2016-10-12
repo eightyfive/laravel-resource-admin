@@ -1,0 +1,12 @@
+{% if errors|length %}
+<div class="ui error message">
+  <div class="header">
+    There was some errors with your submission
+  </div>
+  <ul class="list">
+    {% for error in errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
