@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Eyf\\Admin": "src/"
+            "Eyf\\Radmin\\": "src/"
         }
     },
     "minimum-stability": "dev",
