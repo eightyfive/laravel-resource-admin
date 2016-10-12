@@ -11,7 +11,7 @@
     "require": {
         "php": ">=5.6",
         "illuminate/support": "^5.2",
-        "kris/laravel-form-builder": "1.9.*",
+        "kris/laravel-form-builder": "1.9.*"
     },
     "autoload": {
         "psr-4": {
