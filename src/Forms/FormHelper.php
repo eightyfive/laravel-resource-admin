@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 abstract class FormHelper extends Form
 {
-    protected $transNamespace = 'radmin::forms';
+    protected $transNamespace = 'eyf/admin::forms';
     protected $translate = null;
 
     protected $types = [];

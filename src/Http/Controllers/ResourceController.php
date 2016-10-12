@@ -469,7 +469,7 @@ abstract class ResourceController extends Controller
         if (in_array($action, $this->views)) {
             return $this->getResourcePath($action);
         }
-        return 'radmin::' . implode('.', ['resource', $action]);
+        return 'eyf/admin::' . implode('.', ['resource', $action]);
     }
 
     protected function makeUrl($action, $params = [])
@@ -554,6 +554,6 @@ abstract class ResourceController extends Controller
 
     protected function trans($key, array $data)
     {
-        return trans('radmin::' . $key, $data);
+        return trans('eyf/admin::' . $key, $data);
     }
 }
