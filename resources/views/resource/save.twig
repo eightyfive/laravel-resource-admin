@@ -1,11 +1,15 @@
-{% extends 'radmin::layout' %}
+{% extends 'radmin::layouts/tabular' %}
 
 {% block meta_title %}
   {{ title }}
 {% endblock %}
 
-{% block content %}
-{{ form_start(form)|raw }}
-  {{ form_until(form, 'submit')|raw }}
-{{ form_end(form, false)|raw }}
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block tabs_content %}
+<div class="ui tab active" data-tab="tab-edit">
+  {{ form(form)|raw }}
+</div>
 {% endblock %}

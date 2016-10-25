@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include 'radmin::layouts/_html-head' %}
+  </head>
+  <body>
+    {% block header %}
+      {% include 'radmin::layouts/_header' %}
+    {% endblock %}
+
+    <div class="ui container">
+      {% include 'radmin::layouts/_flash' %}
+      {% block content '' %}
+      <div class="ui hidden divider"></div>
+    </div>
+
+    {% block footer '' %}
+    {% include 'radmin::layouts/_javascripts' %}
+  </body>
+</html>

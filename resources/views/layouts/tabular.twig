@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include 'radmin::layouts/_html-head' %}
+  </head>
+  <body>
+    {% block header %}
+      {% include 'radmin::layouts/_header' %}
+    {% endblock %}
+
+    <div class="ui container">
+      {% include 'radmin::layouts/_flash' %}
+
+      <h1 class="ui dividing header">{% block title title|default('') %}</h1>
+
+      <div class="ui grid">
+        <div class="four wide column">
+          <div class="ui vertical fluid tabular menu">
+            {% block tabs %}
+            <a class="item active" data-tab="tab-edit">Edit</a>
+            {% endblock %}
+          </div>
+          <a href="{{ url_index }}">&larr; Back to {{ resource_plural }}</a>
+        </div>
+        <div class="twelve wide column">
+          {% block tabs_content '' %}
+        </div>
+      </div>
+      <div class="ui hidden divider"></div>
+    </div>
+
+    {% block footer '' %}
+    {% include 'radmin::layouts/_javascripts' %}
+  </body>
+</html>
