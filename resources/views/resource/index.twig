@@ -12,7 +12,7 @@
 {% set isPaginator = models.currentPage %}
 {% if isPaginator %}
   {% set _from = (models.currentPage - 1) * models.perPage + 1 %}
-  {% set _to = min(models.count(), models.currentPage * models.perPage) %}
+  {% set _to = min(models.total, models.currentPage * models.perPage) %}
 {% endif %}
 
 {% block meta_title %}

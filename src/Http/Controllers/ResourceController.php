@@ -2,20 +2,20 @@
 
 namespace Eyf\RAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Routing\Router;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
-use Illuminate\Routing\Controller;
 use Eyf\RAdmin\Forms\SubmitCancelForm;
-use Illuminate\Routing\Router;
-
 
 abstract class ResourceController extends Controller
 {
-    use FormBuilderTrait;
+    use FormBuilderTrait, AuthorizesRequests;
 
     protected $redirectTo = 'index';
     protected $orderBy    = 'updated_at';
