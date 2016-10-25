@@ -1,2 +1,9 @@
 # Laravel Resource Admin
-TODO
+
+## Installation
+
+```
+...
+Eyf\Admin\AdminServiceProvider::class,
+...
+```

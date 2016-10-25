@@ -1,6 +1,6 @@
 {
     "name": "eightyfive/laravel-resource-admin",
-    "description": "Generic Admin controller for Laravel Resources",
+    "description": "Generic Admin controller & helpers for Laravel Resources",
     "license": "None",
     "authors": [
         {
@@ -15,9 +15,9 @@
     },
     "autoload": {
         "psr-4": {
-            "Eyf\\Radmin\\": "src/"
+            "Eyf\\Admin\\": "src/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
