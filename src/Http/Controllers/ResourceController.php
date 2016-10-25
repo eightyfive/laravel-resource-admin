@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Eyf\Admin\Forms\SubmitCancelForm;
+use Illuminate\Routing\Router;
+
 
 abstract class ResourceController extends Controller
 {
@@ -21,13 +23,12 @@ abstract class ResourceController extends Controller
     protected $perPage    = 10;
     protected $columns    = [];
     protected $views      = [];
-    //
     protected $crumbs;
     protected $namespace;
     protected $parents;
-    //
     protected $resources  = [];
     protected $menu;
+    protected $router;
     //
     protected $styles = [
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css',
@@ -47,8 +48,10 @@ abstract class ResourceController extends Controller
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/tab.min.js',
     ];
 
-    public function __construct()
+    public function __construct(Router $router)
     {
+        $this->router = $router;
+
         $that = $this;
         $this->middleware(function ($request, $next) use ($that) {
             $that->before($request);
@@ -403,13 +406,15 @@ abstract class ResourceController extends Controller
     {
         $prefix = implode('.', ['messages', 'titles']);
 
-        $title = $this->trans($prefix . '.' . $this->getResourcePath($action), [
+        $transKey = $prefix . '.' . $this->getResourcePath($action);
+        $title = $this->trans($transKey, [
             'resource_singular' => $this->getResourceSingular(),
             'resource_plural' => $this->getResourcePlural(),
         ]);
 
-        if ($key === $title) {
-            $title = $this->trans($prefix . '.' . $action, [
+        if ($transKey === $title) {
+            $transKey = $prefix . '.' . $action;
+            $title = $this->trans($transKey, [
                 'resource_singular' => $this->getResourceSingular(),
                 'resource_plural' => $this->getResourcePlural(),
             ]);
@@ -468,7 +473,7 @@ abstract class ResourceController extends Controller
     protected function makeRouteName($action)
     {
         $name = $this->getResourcePath($action);
-        return static::$router->has($name) ? $name : null;
+        return $this->router->has($name) ? $name : null;
     }
 
     protected function makeTemplateName($action)
