@@ -23,6 +23,7 @@ abstract class ResourceController extends Controller
     protected $views      = [];
     //
     protected $crumbs;
+    protected $namespace;
     protected $parents;
     //
     protected $resources  = [];
@@ -86,15 +87,26 @@ abstract class ResourceController extends Controller
         return $this->crumbs;
     }
 
-    protected function getParents ()
+    protected function getNamespace ()
     {
-        if (!isset($this->parents)) {
+        if (!isset($this->namespace)) {
             $crumbs = $this->getCrumbs();
             array_pop($crumbs);
 
+            $this->namespace = $crumbs;
+        }
+        return $this->namespace;
+    }
+
+    protected function getParents ()
+    {
+        if (!isset($this->parents)) {
+            $namespace = $this->getNamespace();
+            array_shift($namespace); // Remove 'Admin' namespace (not a parent)
+
             $this->parents = array_map(function ($parent) {
                 return str_slug($parent);
-            }, $crumbs);
+            }, $namespace);
         }
         return $this->parents;
     }
@@ -111,7 +123,7 @@ abstract class ResourceController extends Controller
 
     protected function getResourceNamespace ()
     {
-        return implode('.', $this->getParents());
+        return implode('.', $this->getNamespace());
     }
 
     protected function getResourceToString ($model)
