@@ -1,6 +1,6 @@
 <?php
 
-namespace Eyf\Radmin\Http\Controllers;
+namespace Eyf\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

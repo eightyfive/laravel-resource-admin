@@ -1,6 +1,6 @@
 <?php
 
-namespace Eyf\Radmin\Forms;
+namespace Eyf\Admin\Forms;
 
 use Kris\LaravelFormBuilder\Form;
 
