@@ -412,13 +412,14 @@ abstract class ResourceController extends Controller
             'resource_plural' => $this->getResourcePlural(),
         ]);
 
-        if ($transKey === $title) {
+        if ($title === false) {
             $transKey = $prefix . '.' . $action;
             $title = $this->trans($transKey, [
                 'resource_singular' => $this->getResourceSingular(),
                 'resource_plural' => $this->getResourcePlural(),
             ]);
         }
+
 
         return $title;
     }
@@ -566,6 +567,13 @@ abstract class ResourceController extends Controller
 
     protected function trans($key, array $data)
     {
-        return trans('radmin::' . $key, $data);
+        $transKey = 'radmin::' . $key;
+        $trans = trans($transKey, $data);
+
+        if ($trans === $transKey) {
+            return false;
+        }
+
+        return $trans;
     }
 }
