@@ -80,7 +80,7 @@ abstract class ResourceController extends Controller
     protected function getCrumbs ()
     {
         if (!isset($this->crumbs)) {
-            $className = str_replace('App\\Http\\Controllers\\', '', __CLASS__);
+            $className = str_replace('App\\Http\\Controllers\\', '', get_class($this));
             $this->crumbs = explode('\\', $className);
         }
         return $this->crumbs;
