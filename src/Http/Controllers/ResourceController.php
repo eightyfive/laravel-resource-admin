@@ -96,7 +96,9 @@ abstract class ResourceController extends Controller
             $crumbs = $this->getCrumbs();
             array_pop($crumbs);
 
-            $this->namespace = $crumbs;
+            $this->namespace = array_map(function ($parent) {
+                return str_slug($parent);
+            }, $crumbs);
         }
         return $this->namespace;
     }
@@ -107,9 +109,7 @@ abstract class ResourceController extends Controller
             $namespace = $this->getNamespace();
             array_shift($namespace); // Remove 'Admin' namespace (not a parent)
 
-            $this->parents = array_map(function ($parent) {
-                return str_slug($parent);
-            }, $namespace);
+            $this->parents = $namespace;
         }
         return $this->parents;
     }
