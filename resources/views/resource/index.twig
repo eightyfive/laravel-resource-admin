@@ -1,8 +1,8 @@
-{% extends 'eyf/admin::layout' %}
+{% extends 'radmin::layout' %}
 
 {# DEFAULTS #}
 {% if tableView is not defined %}
-  {% set tableView = 'eyf/admin::components/_table' %}
+  {% set tableView = 'radmin::components/_table' %}
 {% endif %}
 {% if showTitle is not defined %}
   {% set showTitle = true %}
@@ -32,12 +32,12 @@
   {% if models|length %}
     {% include tableView %}
     {% if isPaginator %}
-      {{ models.links('eyf/admin::components/_pagination')|raw }}
+      {{ models.links('radmin::components/_pagination')|raw }}
     {% endif %}
   {% else %}
   <div class="ui warning message">
     <div class="header">
-      {{ trans('eyf/admin::messages.no_resource_found', {resource_singular: resource_singular}) }}
+      {{ trans('radmin::messages.no_resource_found', {resource_singular: resource_singular}) }}
     </div>
   </div>
   {% endif %}

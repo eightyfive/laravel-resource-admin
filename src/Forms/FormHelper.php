@@ -1,6 +1,6 @@
 <?php
 
-namespace Eyf\Admin\Forms;
+namespace Eyf\RAdmin\Forms;
 
 use Kris\LaravelFormBuilder\Form;
 use Illuminate\Database\Eloquent\Model as EloquentModel;

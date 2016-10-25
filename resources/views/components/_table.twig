@@ -13,7 +13,7 @@
       {% for col in columns %}
         {% set colId = resource_slug ~ 'IndexCol' ~ col|capitalize %}
         {% set colSortUrl = url_index ~ '?page=1&order=' ~ col ~ '&dir=' ~ (col == orderBy ? nextOrderDir : 'asc')  %}
-        {% set colTransKey = 'eyf/admin::columns.' ~ col %}
+        {% set colTransKey = 'radmin::columns.' ~ col %}
         {% set colName = trans(colTransKey) %}
         {% if colName == colTransKey %}
           {% set colName = col|capitalize %}
@@ -54,7 +54,7 @@
             {% set urlEdit = false %}
           {% endif %}
 
-          {% include 'eyf/admin::components/_table-cell' with {
+          {% include 'radmin::components/_table-cell' with {
             val: model.getAttribute(col),
             isActive: col == orderBy,
             url: urlEdit,

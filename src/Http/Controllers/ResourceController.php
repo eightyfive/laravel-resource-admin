@@ -1,6 +1,6 @@
 <?php
 
-namespace Eyf\Admin\Http\Controllers;
+namespace Eyf\RAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
 use Illuminate\Routing\Controller;
-use Eyf\Admin\Forms\SubmitCancelForm;
+use Eyf\RAdmin\Forms\SubmitCancelForm;
 use Illuminate\Routing\Router;
 
 
