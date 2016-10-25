@@ -29,6 +29,11 @@ abstract class ResourceController extends Controller
     protected $resources  = [];
     protected $menu;
     protected $router;
+    protected $css = [
+        'form' => 'ui form'
+        'btn_primary' => 'ui primary button',
+        'btn_secondary' => 'ui basic button',
+    ];
     //
     protected $styles = [
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css',
@@ -441,7 +446,11 @@ abstract class ResourceController extends Controller
             throw new \Exception('Failed to create \'' . $action . '\' Form action url (associated route name was not found in Router). If nested Resource, have you declared `getResourceNamespace()`?');
         }
 
-        $form = $this->form($this->getFormClassName(), compact('method', 'url', 'model'), $formData);
+        $formOptions = array_merge(compact('method', 'url', 'model'), [
+            'class' => $this->css['form']
+        ]);
+        $form = $this->form($this->getFormClassName(), $formOptions, $formData);
+
         if ($values = $form->getData('values')) {
             foreach ($values as $key => $value) {
                 $form->getField($key)->setValue($value);
@@ -455,6 +464,8 @@ abstract class ResourceController extends Controller
                 'isCreate' => $method === 'POST',
             ]
         ]);
+        $this->setButtons($form, $this->css['btn_primary'], $this->css['btn_secondary']);
+
         return $form;
     }
 
