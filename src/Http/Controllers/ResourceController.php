@@ -5,7 +5,6 @@ namespace Eyf\Admin\Http\Controllers;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Routing\Router;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
@@ -29,8 +28,6 @@ abstract class ResourceController extends Controller
     protected $resources  = [];
     protected $menu;
     //
-    protected $router;
-    //
     protected $styles = [
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css',
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/checkbox.min.css',
@@ -49,10 +46,8 @@ abstract class ResourceController extends Controller
         'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/tab.min.js',
     ];
 
-    public function __construct(Router $router)
+    public function __construct()
     {
-        $this->router = $router;
-
         $that = $this;
         $this->middleware(function ($request, $next) use ($that) {
             $that->before($request);
@@ -461,7 +456,7 @@ abstract class ResourceController extends Controller
     protected function makeRouteName($action)
     {
         $name = $this->getResourcePath($action);
-        return $this->router->has($name) ? $name : null;
+        return static::$router->has($name) ? $name : null;
     }
 
     protected function makeTemplateName($action)
