@@ -29,29 +29,6 @@ abstract class ResourceController extends Controller
     protected $resources  = [];
     protected $menu;
     protected $router;
-    protected $css = [
-        'form' => 'ui form',
-        'btn_primary' => 'ui primary button',
-        'btn_secondary' => 'ui basic button',
-    ];
-    //
-    protected $styles = [
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/checkbox.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/dropdown.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/list.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/modal.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/tab.min.css',
-    ];
-
-    protected $scripts = [
-        'https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/checkbox.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/dropdown.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/modal.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/components/tab.min.js',
-    ];
 
     public function __construct(Router $router)
     {
@@ -89,7 +66,7 @@ abstract class ResourceController extends Controller
     protected function getCrumbs ()
     {
         if (!isset($this->crumbs)) {
-            $className = str_replace('App\\Http\\Controllers\\', '', get_class($this));
+            $className = str_replace(config('namespaces.controllers'), '', get_class($this));
             $this->crumbs = explode('\\', $className);
         }
         return $this->crumbs;
@@ -121,12 +98,12 @@ abstract class ResourceController extends Controller
 
     protected function getFormClassName ()
     {
-        return 'App\\Forms\\' . $this->getModelShortName() . 'Form';
+        return config('namespaces.forms') . $this->getModelShortName() . 'Form';
     }
 
     protected function getModelClassName ()
     {
-        return 'App\\' . $this->getModelShortName();
+        return config('namespaces.models') . $this->getModelShortName();
     }
 
     protected function getResourceNamespace ()
@@ -379,8 +356,8 @@ abstract class ResourceController extends Controller
         $routeParams = $request->route()->parameters();
 
         $data = array_merge([
-            'styles' => $this->styles,
-            'scripts' => $this->scripts,
+            'styles' => config('radmin.styles'),
+            'scripts' => config('radmin.scripts'),
             'user' => $request->user(),
             'menu' => $this->getMenu($request),
             'resource_slug' => $this->getResourceSlug(),
@@ -447,7 +424,7 @@ abstract class ResourceController extends Controller
         }
 
         $formOptions = array_merge(compact('method', 'url', 'model'), [
-            'class' => $this->css['form']
+            'class' => config('css.form')
         ]);
         $form = $this->form($this->getFormClassName(), $formOptions, $formData);
 
@@ -464,7 +441,7 @@ abstract class ResourceController extends Controller
                 'isCreate' => $method === 'POST',
             ]
         ]);
-        $this->setButtons($form, $this->css['btn_primary'], $this->css['btn_secondary']);
+        $this->setButtons($form, config('css.btn_primary'), config('css.btn_secondary'));
 
         return $form;
     }

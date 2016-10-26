@@ -10,14 +10,23 @@ class AdminServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'radmin');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'radmin');
 
+         $this->publishes([
+            __DIR__ . '/../config/radmin.php' => config_path('radmin.php')
+        ], 'config');
+
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/radmin'),
+        ], 'views');
+
         $this->publishes([
             __DIR__ . '/../resources/lang' => resource_path('lang/vendor/radmin'),
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/radmin'),
-        ]);
+        ], 'lang');
     }
 
     public function register()
     {
-        //
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/radmin.php', 'radmin'
+        );
     }
 }

@@ -20,6 +20,8 @@ abstract class FormHelper extends Form
 
     protected $attrs = [];
 
+    protected $noLabel = [];
+
     protected $wrapperAttrs = [];
 
     protected $options = [];
@@ -31,7 +33,10 @@ abstract class FormHelper extends Form
             $isRequired = !in_array($attr, $this->optionals);
 
             // Try to translate Label
-            if ($label = $this->trans($attr, true)) {
+            $noLabel = in_array($attr, $this->noLabel);
+            if ($noLabel) {
+                $options['label'] = false;
+            } else if ($label = $this->trans($attr, true)) {
                 $options['label'] = $label;
             }
 

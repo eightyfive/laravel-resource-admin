@@ -2,6 +2,7 @@
 <html>
   <head>
     {% include 'radmin::layouts/_html-head' %}
+    {% block styles '' %}
   </head>
   <body>
     {% block header %}
@@ -32,6 +33,11 @@
     </div>
 
     {% block footer '' %}
-    {% include 'radmin::layouts/_javascripts' %}
+    {% for script in scripts %}
+      <script src="{{ script }}"></script>
+    {% endfor %}
+    {% block javascripts %}
+      {% include 'radmin::layouts/_javascripts' %}
+    {% endblock %}
   </body>
 </html>
