@@ -20,7 +20,9 @@
             <a class="item active" data-tab="tab-edit">Edit</a>
             {% endblock %}
           </div>
-          <a href="{{ url_index }}">&larr; Back to {{ resource_plural }}</a>
+          {% block back_link %}
+            <a href="{{ url_index }}">&larr; Back to {{ resource_plural }}</a>
+          {% endblock %}
         </div>
         <div class="twelve wide column">
           {% block tabs_content '' %}

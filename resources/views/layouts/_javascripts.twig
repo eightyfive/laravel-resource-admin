@@ -1,4 +1,22 @@
 {% for script in scripts %}
   <script src="{{ script }}"></script>
 {% endfor %}
-{% block javascript '' %}
+{% block javascripts %}
+<script>
+  function bootUi (ctx) {
+    if (!ctx) ctx = document.body
+
+    $('.ui.dropdown', ctx).dropdown()
+    $('.ui.checkbox', ctx).checkbox()
+    $('.tabular.menu .item', ctx).tab()
+  }
+  bootUi()
+
+  $(document).on('click', '[data-confirm]', function (ev) {
+    var ok = confirm($(ev.currentTarget).data('confirm'))
+    if (!ok) {
+      ev.preventDefault()
+    }
+  })
+</script>
+{% endblock %}

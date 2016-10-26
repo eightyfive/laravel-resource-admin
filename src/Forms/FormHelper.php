@@ -57,6 +57,11 @@ abstract class FormHelper extends Form
                 $options['query_builder'] = function (EloquentModel $model) use ($options) {
                     return call_user_func([$this, $options['query_builder']], $model);
                 };
+                if (isset($options['selected']) && strpos($options['selected'], '::') === 0) {
+                    $options['selected'] = function ($data) use ($options) {
+                        return call_user_func([$this, str_replace('::', '', $options['selected'])], $data);
+                    };
+                }
             }
             if ($type === 'select' && is_string($options['choices'])) {
                 $options['choices'] = call_user_func([$this, $options['choices']]);
@@ -116,5 +121,17 @@ abstract class FormHelper extends Form
         }
 
         return $trans;
+    }
+
+    protected function sortByName (EloquentModel $model)
+    {
+        return $model->orderBy('name', 'asc');
+    }
+
+    protected function pluckSelected($data) {
+        if ($data) {
+            return array_pluck($data, 'id');
+        }
+        return null;
     }
 }

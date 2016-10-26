@@ -1,0 +1,17 @@
+{% extends 'radmin::laravel-form-builder/field' %}
+
+{% block content %}
+  {% if showField %}
+<div class="collection-input">
+{% spaceless %}
+    {% for child in options.children %}
+  <div class="collection-input__item">
+    {{ child.render()|raw }}
+    <a class="pointer" data-remove>x</a>
+  </div>
+    {% endfor %}
+{% endspaceless %}
+  <a class="pointer small collection-input__foot" data-clone=".collection-input__item">Add</a>
+</div>
+  {% endif %}
+{% endblock %}

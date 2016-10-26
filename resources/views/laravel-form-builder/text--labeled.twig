@@ -1,0 +1,18 @@
+{% extends 'radmin::laravel-form-builder/text' %}
+
+{% set isRight = options.labeled_position == 'right' %}
+{% set label %}
+  <div class="ui{% if options.labeled_class %} {{options.labeled_class}}{% endif %} label">
+    {{ options.labeled }}
+  </div>
+{% endset %}
+
+{% block content %}
+  {% if showField %}
+  <div class="ui{% if isRight %} right{% endif %} labeled input">
+    {% if not isRight %}{{ label }}{% endif %}
+    {{ parent() }}
+    {% if isRight %}{{ label }}{% endif %}
+  </div>
+  {% endif %}
+{% endblock %}

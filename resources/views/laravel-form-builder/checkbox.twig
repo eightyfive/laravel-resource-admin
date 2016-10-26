@@ -1,0 +1,26 @@
+{% if showLabel and showField %}
+  {% if options.wrapper != false %}
+    <div {{ options.wrapperAttrs }} >
+  {% endif %}
+{% endif %}
+
+{% if showField %}
+  {{ Form.checkbox(name, options.value, options.checked, options.attr)|raw }}
+  {% include 'radmin::laravel-form-builder/help_block' %}
+{% endif %}
+
+{% if showLabel and options.label != false %}
+  {% if options.is_child %}
+    <label {{ options.labelAttrs }}>{{ options.label }}</label>
+  {% else %}
+    {{ Form.label(name, options.label, options.label_attr)|raw }}
+  {% endif %}
+{% endif %}
+
+{% include 'radmin::laravel-form-builder/errors' %}
+
+{% if showLabel and showField %}
+  {% if options.wrapper != false %}
+    </div>
+  {% endif %}
+{% endif %}

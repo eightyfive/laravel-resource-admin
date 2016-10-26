@@ -1,0 +1,22 @@
+
+{% set showWrapper = options.wrapper != false and type != 'hidden' and not options.is_child %}
+
+{% if showField %}
+  {% if showWrapper %}
+    <div {{ options.wrapperAttrs|raw }}>
+      <div class="field">
+      {% if showLabel and options.label != false %}
+        {{ Form.label(name, options.label, options.label_attr)|raw }}
+      {% endif %}
+  {% endif %}
+
+  {% block content '' %}
+
+  {% include 'radmin::laravel-form-builder/help_block' %}
+  {% include 'radmin::laravel-form-builder/errors' %}
+
+  {% if showWrapper %}
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

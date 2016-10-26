@@ -1,0 +1,12 @@
+{% extends 'radmin::laravel-form-builder/field' %}
+
+{% block content %}
+  {% if showField %}
+    {% for child in options.children %}
+        {% if child.getRealName() not in options.exclude %}
+            {{ child.render()|raw }}
+        {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endblock %}
+

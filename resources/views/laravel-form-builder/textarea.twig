@@ -1,0 +1,7 @@
+{% extends 'radmin::laravel-form-builder/field' %}
+
+{% block content %}
+  {% if showField %}
+  {{ Form.textarea(name, options.value, options.attr)|raw }}
+  {% endif %}
+{% endblock %}

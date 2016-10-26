@@ -30,7 +30,7 @@ abstract class ResourceController extends Controller
     protected $menu;
     protected $router;
     protected $css = [
-        'form' => 'ui form'
+        'form' => 'ui form',
         'btn_primary' => 'ui primary button',
         'btn_secondary' => 'ui basic button',
     ];

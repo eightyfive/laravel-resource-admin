@@ -1,0 +1,6 @@
+{% if showError and errors is defined %}
+    {% for err in errors.get(nameKey) %}
+        <div {{ options.errorAttrs|raw }}>{{ err }}</div>
+    {% endfor %}
+{% endif %}
+
