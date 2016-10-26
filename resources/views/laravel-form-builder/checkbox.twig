@@ -2,7 +2,7 @@
   {% if options.wrapper != false %}
     <div {{ options.wrapperAttrs|raw }} >
   {% endif %}
-      <div class="ui{% if isToggle %} toggle{% endif %} checkbox">
+      <div class="ui{% if options.toggle %} {{ options.toggle_class }}{% endif %} checkbox">
 {% endif %}
 
 {% if showField %}
