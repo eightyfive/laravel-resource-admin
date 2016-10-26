@@ -58,7 +58,7 @@ abstract class ResourceController extends Controller
     {
         foreach ($this->getParents() as $parent) {
             if (!$request->user()->can('view', $request->route($parent))) {
-                throw new AccessDeniedHttpException();
+                throw new AccessDeniedHttpException('User is not allowed to view `' . $parent . '` parent resource');
             }
         }
     }
@@ -66,7 +66,7 @@ abstract class ResourceController extends Controller
     protected function getCrumbs ()
     {
         if (!isset($this->crumbs)) {
-            $className = str_replace(config('namespaces.controllers'), '', get_class($this));
+            $className = str_replace(config('radmin.namespaces.controllers'), '', get_class($this));
             $this->crumbs = explode('\\', $className);
         }
         return $this->crumbs;
@@ -98,12 +98,12 @@ abstract class ResourceController extends Controller
 
     protected function getFormClassName ()
     {
-        return config('namespaces.forms') . $this->getModelShortName() . 'Form';
+        return config('radmin.namespaces.forms') . $this->getModelShortName() . 'Form';
     }
 
     protected function getModelClassName ()
     {
-        return config('namespaces.models') . $this->getModelShortName();
+        return config('radmin.namespaces.models') . $this->getModelShortName();
     }
 
     protected function getResourceNamespace ()
@@ -424,7 +424,7 @@ abstract class ResourceController extends Controller
         }
 
         $formOptions = array_merge(compact('method', 'url', 'model'), [
-            'class' => config('css.form')
+            'class' => config('radmin.css.form')
         ]);
         $form = $this->form($this->getFormClassName(), $formOptions, $formData);
 
@@ -441,7 +441,7 @@ abstract class ResourceController extends Controller
                 'isCreate' => $method === 'POST',
             ]
         ]);
-        $this->setButtons($form, config('css.btn_primary'), config('css.btn_secondary'));
+        $this->setButtons($form, config('radmin.css.btn_primary'), config('radmin.css.btn_secondary'));
 
         return $form;
     }
