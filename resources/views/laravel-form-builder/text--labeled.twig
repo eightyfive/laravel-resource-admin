@@ -3,16 +3,16 @@
 {% set isRight = options.labeled_position == 'right' %}
 {% set label %}
   <div class="ui{% if options.labeled_class %} {{options.labeled_class}}{% endif %} label">
-    {{ options.labeled }}
+    {{ options.labeled_text|raw }}
   </div>
 {% endset %}
 
 {% block content %}
   {% if showField %}
   <div class="ui{% if isRight %} right{% endif %} labeled input">
-    {% if not isRight %}{{ label }}{% endif %}
+    {% if not isRight %}{{ label|raw }}{% endif %}
     {{ parent() }}
-    {% if isRight %}{{ label }}{% endif %}
+    {% if isRight %}{{ label|raw }}{% endif %}
   </div>
   {% endif %}
 {% endblock %}
