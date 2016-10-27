@@ -1,0 +1,14 @@
+{% extends 'radmin::layouts/default' %}
+
+{% block content %}
+  <h1 class="ui dividing header">
+    {{ title }}
+  </h1>
+  <div class="ui error message">
+    <div class="header">
+      {{ trans('radmin::messages.delete_header', {resource: resource_to_string}) }}
+    </div>
+    {{ trans('radmin::messages.delete_lead') }}
+  </div>
+  {{ form(form)|raw }}
+{% endblock %}

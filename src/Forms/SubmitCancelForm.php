@@ -8,18 +8,23 @@ class SubmitCancelForm extends Form
 {
     public function buildForm()
     {
-        $isCreate = $this->getData('isCreate');
+        $action = $this->getData('action');
+        $label = trans('radmin::messages.btn_' . $action);
 
         $this
             ->add('submitButton', 'submit', [
                 'wrapper' => false,
-                'label' => $isCreate ? 'Add' : 'Update',
+                'label' => $label,
+                'attr' => [
+                    'class' => config('radmin.css.btn_primary')
+                ]
             ])
             ->add('cancelButton', 'button', [
                 'wrapper' => false,
-                'label' => 'Cancel',
+                'label' => trans('radmin::messages.btn_cancel'),
                 'attr' => [
                     'onclick' => 'javascript: history.back();',
+                    'class' => config('radmin.css.btn_secondary')
                 ]
             ])
         ;

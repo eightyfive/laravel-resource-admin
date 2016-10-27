@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
+use Eyf\RAdmin\Forms\DeleteForm;
 use Eyf\RAdmin\Forms\SubmitCancelForm;
 
 abstract class ResourceController extends AdminController
@@ -317,6 +318,24 @@ abstract class ResourceController extends AdminController
     }
 
     /**
+     * Confirm removal of the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete (Request $request)
+    {
+        $model = $this->getModel($request);
+        $this->authorize('delete', $model);
+
+        $url = $this->makeUrl('destroy', $request->route()->parameters());
+
+        $form = $this->form(DeleteForm::class, compact('url', 'model'));
+
+        return $this->render('delete', compact('model', 'form'), $request);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -345,6 +364,10 @@ abstract class ResourceController extends AdminController
     protected function view ($template, $data, Request $request)
     {
         $view = parent::view($template, $data, $request);
+
+        if (isset($view['model'])) {
+            $view->with('resource_to_string', $this->getResourceToString($view['model']));
+        }
 
         $routeParams = $request->route()->parameters();
 
@@ -420,11 +443,8 @@ abstract class ResourceController extends AdminController
         $form->add('submit', 'form', [
             'label' => false,
             'class' => SubmitCancelForm::class,
-            'data' => [
-                'isCreate' => $method === 'POST',
-            ]
+            'data' => ['action' => $method === 'POST' ? 'create' : 'update']
         ]);
-        $this->setButtons($form, config('radmin.css.btn_primary'), config('radmin.css.btn_secondary'));
 
         return $form;
     }
@@ -511,29 +531,6 @@ abstract class ResourceController extends AdminController
     protected function afterCreate($model, Request $request)
     {
         //
-    }
-
-    protected function setButtons($form, $primary, $secondary)
-    {
-        $this->_setFieldClass($form->getField('submit'), 'submitButton', $primary);
-        $this->_setFieldClass($form->getField('submit'), 'cancelButton', $secondary);
-    }
-
-    private function _setFieldClass($form, $field, $className)
-    {
-        $this->_mergeFieldAttr($form, $field, ['class' => $className]);
-    }
-
-    private function _mergeFieldAttr($form, $field, $attr)
-    {
-        $attr = array_merge(
-            $form->getField($field)->getOption('attr'),
-            $attr
-        );
-        $form
-            ->getField($field)
-            ->setOption('attr', $attr)
-        ;
     }
 
     protected function trans($key, array $data)
