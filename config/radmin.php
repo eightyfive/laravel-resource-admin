@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'menu' => [
+        // 'Users' => 'admin.user.index'
+    ],
     'namespaces' => [
         'controllers' => 'App\\Http\\Controllers\\',
         'forms' => 'App\\Forms\\',
