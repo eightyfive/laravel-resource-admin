@@ -16,7 +16,7 @@ class SubmitCancelForm extends Form
                 'wrapper' => false,
                 'label' => $label,
                 'attr' => [
-                    'class' => config('radmin.css.btn_primary')
+                    'class' => $action === 'delete' ? config('radmin.css.btn_danger') : config('radmin.css.btn_primary')
                 ]
             ])
             ->add('cancelButton', 'button', [

@@ -31,5 +31,6 @@ return [
     'css' => [
         'btn_primary' => 'ui primary button',
         'btn_secondary' => 'ui basic button',
+        'btn_danger' => 'negative ui button',
     ],
 ];
