@@ -7,13 +7,12 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Routing\Router;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
 use Eyf\RAdmin\Forms\SubmitCancelForm;
 
-abstract class ResourceController extends Controller
+abstract class ResourceController extends AdminController
 {
     use FormBuilderTrait, AuthorizesRequests;
 
@@ -26,8 +25,6 @@ abstract class ResourceController extends Controller
     protected $crumbs;
     protected $namespace;
     protected $parents;
-    protected $resources  = [];
-    protected $menu;
     protected $router;
 
     public function __construct(Router $router)
@@ -192,7 +189,7 @@ abstract class ResourceController extends Controller
             'models'   => $paginator,
         ];
 
-        return $this->view('index', $data, $request);
+        return $this->render('index', $data, $request);
     }
 
     protected function getIndexQuery (Builder $query, Request $request, $orderBy, $orderDir)
@@ -210,7 +207,7 @@ abstract class ResourceController extends Controller
         $this->authorize('create', $this->getModelClassName());
 
         $form = $this->getForm($request);
-        return $this->view('create', compact('form'), $request);
+        return $this->render('create', compact('form'), $request);
     }
 
     /**
@@ -272,7 +269,7 @@ abstract class ResourceController extends Controller
 
         $form = $this->getForm($request, $model);
 
-        return $this->view('edit', compact('model', 'form'), $request);
+        return $this->render('edit', compact('model', 'form'), $request);
     }
 
     /**
@@ -339,27 +336,13 @@ abstract class ResourceController extends Controller
         return $this->redirectTo($request, $model, $flash);
     }
 
-    protected function getMenu (Request $request)
+    protected function view ($template, $data, Request $request)
     {
-        if (!isset($this->menu)) {
-            $menu = [];
-            foreach ($this->resources as $item) {
-                $menu[ucfirst(str_plural($item))] = route($this->getResourcePath('index', $item));
-            }
-            $this->menu = $menu;
-        }
-        return $this->menu;
-    }
+        $view = parent::view($template, $data, $request);
 
-    protected function render ($template, $data, Request $request)
-    {
         $routeParams = $request->route()->parameters();
 
-        $data = array_merge([
-            'styles' => config('radmin.styles'),
-            'scripts' => config('radmin.scripts'),
-            'user' => $request->user(),
-            'menu' => $this->getMenu($request),
+        $view->with([
             'resource_slug' => $this->getResourceSlug(),
             'resource_singular' => $this->getResourceSingular(),
             'resource_plural' => $this->getResourcePlural(),
@@ -368,20 +351,17 @@ abstract class ResourceController extends Controller
             'route_destroy' => $this->makeRouteName('destroy'),
             'url_index' => $this->makeUrl('index', $routeParams),
             'url_create' => $this->makeUrl('create', $routeParams),
-        ], $routeParams, $data);
+        ]);
 
-        if ($status = session('flash_status')) {
-            $data['flash_status'] = $status;
-            $data['flash'] = session('flash');
-        }
+        $view->with($routeParams);
 
-        return view($template, $data);
+        return $view;
     }
 
-    protected function view($action, $data, Request $request)
+    protected function render ($action, $data, Request $request)
     {
         $data['title'] = $this->getTitle($action);
-        return $this->render($this->makeTemplateName($action), $data, $request);
+        return $this->view($this->makeTemplateName($action), $data, $request);
     }
 
     protected function getTitle($action)
