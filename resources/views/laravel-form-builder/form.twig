@@ -1,15 +1,17 @@
+{% if not formOptions.class %}
+  {% set formOptions = formOptions|merge({class: 'ui form'}) %}
+{% endif %}
+
 {% if showStart %}
   {{ Form.open(formOptions)|raw }}
 {% endif %}
 
 {% if showFields %}
-  <div class="ui form">
-    {% for field in fields %}
-    	{% if field.getName() not in exclude %}
-        {{ field.render()|raw }}
-  	  {% endif %}
-    {% endfor %}
-  </div>
+  {% for field in fields %}
+    {% if field.getName() not in exclude %}
+      {{ field.render()|raw }}
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
 {% if showEnd %}

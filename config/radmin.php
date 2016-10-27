@@ -29,7 +29,6 @@ return [
     ],
 
     'css' => [
-        'form' => 'ui form',
         'btn_primary' => 'ui primary button',
         'btn_secondary' => 'ui basic button',
     ],

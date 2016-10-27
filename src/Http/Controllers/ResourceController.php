@@ -403,10 +403,7 @@ abstract class ResourceController extends AdminController
             throw new \Exception('Failed to create \'' . $action . '\' Form action url (associated route name was not found in Router). If nested Resource, have you declared `getResourceNamespace()`?');
         }
 
-        $formOptions = array_merge(compact('method', 'url', 'model'), [
-            'class' => config('radmin.css.form')
-        ]);
-        $form = $this->form($this->getFormClassName(), $formOptions, $formData);
+        $form = $this->form($this->getFormClassName(), compact('method', 'url', 'model'), $formData);
 
         if ($values = $form->getData('values')) {
             foreach ($values as $key => $value) {
