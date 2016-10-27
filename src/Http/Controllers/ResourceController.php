@@ -120,12 +120,18 @@ abstract class ResourceController extends AdminController
 
     protected function getResourceParameter ()
     {
-        return strtolower($this->getModelShortName());
+        return snake_case($this->getModelShortName());
     }
 
     protected function getResourceSingular ()
     {
-        return $this->getModelShortName();
+        return title_case(
+            str_replace(
+                '_',
+                ' ',
+                snake_case($this->getModelShortName())
+            )
+        );
     }
 
     protected function getResourcePlural ()

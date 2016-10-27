@@ -28,5 +28,10 @@ class AdminServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__ . '/../config/radmin.php', 'radmin'
         );
+
+        $this->app->bind(
+            \Illuminate\Routing\ResourceRegistrar::class,
+            \Eyf\RAdmin\Routing\ResourceRegistrar::class
+        );
     }
 }
