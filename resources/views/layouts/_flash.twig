@@ -1,5 +1,5 @@
-{% if flash_status is defined %}
-<div class="ui {{ flash_status }} message">
-  {{ flash|raw }}
+{% if flash is defined %}
+<div class="ui {{ flash.status }} message">
+  {{ flash.message|raw }}
 </div>
 {% endif %}

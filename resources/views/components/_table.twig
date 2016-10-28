@@ -6,13 +6,13 @@
 
 {% if models|length %}
 
-<table id="{{ resource_slug }}Index" class="ui {% block className '' %} celled table">
+<table id="{{ resource.name }}Index" class="ui {% block className '' %} celled table">
   <thead>
     <tr>
       {% block thead %}
       {% for col in columns %}
-        {% set colId = resource_slug ~ 'IndexCol' ~ col|capitalize %}
-        {% set colSortUrl = url_index ~ '?page=1&order=' ~ col ~ '&dir=' ~ (col == orderBy ? nextOrderDir : 'asc')  %}
+        {% set colId = resource.name ~ 'IndexCol' ~ col|capitalize %}
+        {% set colSortUrl = urls.index ~ '?page=1&order=' ~ col ~ '&dir=' ~ (col == orderBy ? nextOrderDir : 'asc')  %}
         {% set colTransKey = 'radmin::columns.' ~ col %}
         {% set colName = trans(colTransKey) %}
         {% if colName == colTransKey %}
@@ -48,8 +48,8 @@
       {% for model in models %}
       <tr>
         {% for col in columns %}
-          {% if loop.first and route_edit %}
-            {% set urlEdit = route(route_edit, routeParams|merge({('' ~ resource_slug ~ ''): model.getKey() })) %}
+          {% if loop.first and routes.edit %}
+            {% set urlEdit = route(routes.edit, routeParams|merge({('' ~ resource.name ~ ''): model.getKey() })) %}
           {% else %}
             {% set urlEdit = false %}
           {% endif %}
@@ -64,7 +64,7 @@
         {% if actions|length %}
         <td>
           {% for action,route_name in actions %}
-            {% set urlAction = route(route_name, routeParams|merge({('' ~ resource_slug ~ ''): model.getKey() })) %}
+            {% set urlAction = route(route_name, routeParams|merge({('' ~ resource.name ~ ''): model.getKey() })) %}
 
             <a href="{{ urlAction }}">
               {{ action|capitalize }}</a>

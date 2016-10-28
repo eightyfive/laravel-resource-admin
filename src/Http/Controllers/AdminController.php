@@ -7,6 +7,13 @@ use Illuminate\Routing\Controller;
 
 abstract class AdminController extends Controller
 {
+    protected $resource;
+
+    public function __construct(ResourceService $resource)
+    {
+        $this->resource = $resource;
+    }
+
     protected function view ($template, $data, Request $request)
     {
         $data = array_merge([
@@ -17,8 +24,10 @@ abstract class AdminController extends Controller
         ], $data);
 
         if ($status = session('flash_status')) {
-            $data['flash_status'] = $status;
-            $data['flash'] = session('flash');
+            $data['flash'] = [
+                'status' => $status,
+                'message' => session('flash'),
+            ];
         }
 
         return view($template, $data);
@@ -34,12 +43,5 @@ abstract class AdminController extends Controller
             }
         }
         return $menu;
-    }
-
-    protected function getModelClassName ($resource = null)
-    {
-        $shortName = $resource ? ucfirst(camel_case($resource)) : $this->getModelShortName();
-
-        return config('radmin.namespaces.models') . $shortName;
     }
 }

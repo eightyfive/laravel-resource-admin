@@ -2,10 +2,10 @@
 
 return [
     'titles' => [
-        'index' => ':resource_plural',
-        'create' => 'Add new :resource_singular',
-        'edit' => 'Edit :resource_singular',
-        'delete' => 'Delete :resource_singular',
+        'index' => ':resource.plural',
+        'create' => 'Add new :resource.singular',
+        'edit' => 'Edit :resource.singular',
+        'delete' => 'Delete :resource.singular',
     ],
     'errors' => [
         'store' => '<strong>An error occurred</strong>. Please review your input.',
@@ -16,7 +16,8 @@ return [
         'update' => ':resource has been successfully updated.',
         'destroy' => ':resource has been successfully deleted.',
     ],
-    'no_resource_found' => 'No :resource_singular found.',
+    'no_resource_found' => 'No :resource.singular found.',
+    'btn_create_resource' => 'Add :resource',
     'btn_create' => 'Add',
     'btn_edit' => 'Update',
     'btn_delete' => 'Delete',

@@ -29,9 +29,6 @@ class AdminServiceProvider extends ServiceProvider
             __DIR__ . '/../config/radmin.php', 'radmin'
         );
 
-        $this->app->bind(
-            \Illuminate\Routing\ResourceRegistrar::class,
-            \Eyf\RAdmin\Routing\ResourceRegistrar::class
-        );
+        $this->app->bind('Illuminate\Routing\ResourceRegistrar', 'Eyf\RAdmin\Routing\ResourceRegistrar');
     }
 }

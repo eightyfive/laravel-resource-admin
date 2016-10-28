@@ -12,6 +12,7 @@ use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
 use Eyf\RAdmin\Forms\DeleteForm;
 use Eyf\RAdmin\Forms\SubmitCancelForm;
+use Eyf\RAdmin\ResourceService;
 
 abstract class ResourceController extends AdminController
 {
@@ -23,14 +24,12 @@ abstract class ResourceController extends AdminController
     protected $perPage    = 10;
     protected $columns    = [];
     protected $views      = [];
-    protected $crumbs;
-    protected $namespace;
-    protected $parents;
-    protected $router;
 
-    public function __construct(Router $router)
+    public function __construct(ResourceService $resource)
     {
-        $this->router = $router;
+        parent::__construct($resource);
+
+        $this->resource->setController($this);
 
         $that = $this;
         $this->middleware(function ($request, $next) use ($that) {
@@ -42,8 +41,14 @@ abstract class ResourceController extends AdminController
         });
     }
 
+    public function getResourceToString ($model)
+    {
+        return $this->resource->singular() . ' <strong>#' . $model->id . '</strong>';
+    }
+
     protected function before (Request $request)
     {
+        $this->resource->setRequest($request);
         $this->canViewParents($request);
     }
 
@@ -54,109 +59,11 @@ abstract class ResourceController extends AdminController
 
     protected function canViewParents (Request $request)
     {
-        foreach ($this->getParents() as $parent) {
+        foreach ($this->resource->parents() as $parent) {
             if (!$request->user()->can('view', $request->route($parent))) {
                 throw new AccessDeniedHttpException('User is not allowed to view `' . $parent . '` parent resource');
             }
         }
-    }
-
-    protected function getCrumbs ()
-    {
-        if (!isset($this->crumbs)) {
-            $className = str_replace(config('radmin.namespaces.controllers'), '', get_class($this));
-            $this->crumbs = explode('\\', $className);
-        }
-        return $this->crumbs;
-    }
-
-    protected function getNamespace ()
-    {
-        if (!isset($this->namespace)) {
-            $crumbs = $this->getCrumbs();
-            array_pop($crumbs);
-
-            $this->namespace = array_map(function ($parent) {
-                return str_slug($parent);
-            }, $crumbs);
-        }
-        return $this->namespace;
-    }
-
-    protected function getParents ()
-    {
-        if (!isset($this->parents)) {
-            $namespace = $this->getNamespace();
-            array_shift($namespace); // Remove 'Admin' namespace (not a parent)
-
-            $this->parents = $namespace;
-        }
-        return $this->parents;
-    }
-
-    protected function getFormClassName ()
-    {
-        return config('radmin.namespaces.forms') . $this->getModelShortName() . 'Form';
-    }
-
-    protected function getResourceNamespace ()
-    {
-        return implode('.', $this->getNamespace());
-    }
-
-    protected function getResourceToString ($model)
-    {
-        return $this->getResourceSingular() . ' <strong>#' . $model->id . '</strong>';
-    }
-
-    protected function getResourceSlug ()
-    {
-        return $this->getResourceParameter();
-    }
-
-    protected function getResourceParameter ()
-    {
-        return snake_case($this->getModelShortName());
-    }
-
-    protected function getResourceSingular ()
-    {
-        return title_case(
-            str_replace(
-                '_',
-                ' ',
-                snake_case($this->getModelShortName())
-            )
-        );
-    }
-
-    protected function getResourcePlural ()
-    {
-        return str_plural($this->getResourceSingular());
-    }
-
-    protected function getModelShortName ()
-    {
-        if (!isset($this->modelShortName)) {
-            $crumbs = $this->getCrumbs();
-            $shortName = array_pop($crumbs);
-
-            $this->modelShortName = str_replace('Controller', '', $shortName);
-        }
-        return $this->modelShortName;
-    }
-
-    protected function getModel (Request $request)
-    {
-        if (!isset($this->model)) {
-            $model = $request->route($this->getResourceParameter());
-            if (!$model) {
-                $modelClassName = $this->getModelClassName();
-                $model = new $modelClassName;
-            }
-            $this->model = $model;
-        }
-        return $this->model;
     }
 
     /**
@@ -166,12 +73,12 @@ abstract class ResourceController extends AdminController
      */
     public function index (Request $request)
     {
-        $this->authorize('view', $this->getModelClassName());
+        $this->authorize('view', $this->resource->modelClassName());
 
         $orderBy = $request->has('order') ? $request->input('order') : $this->orderBy;
         $orderDir = $request->input('dir') ? $request->input('dir') : $this->orderDir;
 
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
 
         // Build query
         $builder = $this->getIndexQuery($model->newQuery(), $request, $orderBy, $orderDir);
@@ -208,7 +115,7 @@ abstract class ResourceController extends AdminController
      */
     public function create (Request $request)
     {
-        $this->authorize('create', $this->getModelClassName());
+        $this->authorize('create', $this->resource->modelClassName());
 
         $form = $this->getForm($request);
         return $this->render('create', compact('form'), $request);
@@ -225,7 +132,7 @@ abstract class ResourceController extends AdminController
         // Before
         $this->beforeSave($request);
 
-        $form = $this->form($this->getFormClassName());
+        $form = $this->form($this->resource->form());
         if (!$form->isValid()) {
             return redirect()
                 ->back()
@@ -236,7 +143,7 @@ abstract class ResourceController extends AdminController
             ;
         }
 
-        $model = $this->getModel($request)->create($request->all());
+        $model = $this->resource->model()->create($request->all());
 
         // After
         $this->afterCreate($model, $request);
@@ -255,9 +162,9 @@ abstract class ResourceController extends AdminController
      */
     public function show (Request $request)
     {
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
 
-        return redirect($this->makeUrl('edit', [$model]));
+        return redirect($this->resource->route('edit', [$model]));
     }
 
     /**
@@ -268,7 +175,7 @@ abstract class ResourceController extends AdminController
      */
     public function edit (Request $request)
     {
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
         $this->authorize('update', $model);
 
         $form = $this->getForm($request, $model);
@@ -288,7 +195,7 @@ abstract class ResourceController extends AdminController
         // Before
         $this->beforeSave($request);
 
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
         $this->authorize('update', $model);
 
         $form = $this->getForm($request, $model);
@@ -322,10 +229,10 @@ abstract class ResourceController extends AdminController
      */
     public function delete (Request $request)
     {
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
         $this->authorize('delete', $model);
 
-        $url = $this->makeUrl('destroy', $request->route()->parameters());
+        $url = $this->resource->route('destroy', $request->route()->parameters());
 
         $form = $this->form(DeleteForm::class, compact('url', 'model'));
 
@@ -340,7 +247,7 @@ abstract class ResourceController extends AdminController
      */
     public function destroy (Request $request)
     {
-        $model = $this->getModel($request);
+        $model = $this->resource->model();
         $this->authorize('delete', $model);
 
         $model->delete();
@@ -369,14 +276,20 @@ abstract class ResourceController extends AdminController
         $routeParams = $request->route()->parameters();
 
         $view->with([
-            'resource_slug' => $this->getResourceSlug(),
-            'resource_singular' => $this->getResourceSingular(),
-            'resource_plural' => $this->getResourcePlural(),
+            'resource' => [
+                'name' => $this->resource->getResourceName(),
+                'singular' => $this->resource->singular(),
+                'plural' => $this->resource->plural(),
+            ],
+            'routes' => [
+                'edit' => $this->resource->routeName('edit'),
+                'destroy' => $this->resource->routeName('destroy'),
+            ],
+            'urls' => [
+                'index' => $this->resource->route('index', $routeParams),
+                'create' => $this->resource->route('create', $routeParams),
+            ],
             'routeParams' => $routeParams,
-            'route_edit' => $this->makeRouteName('edit'),
-            'route_destroy' => $this->makeRouteName('destroy'),
-            'url_index' => $this->makeUrl('index', $routeParams),
-            'url_create' => $this->makeUrl('create', $routeParams),
         ]);
 
         $view->with($routeParams);
@@ -386,50 +299,28 @@ abstract class ResourceController extends AdminController
 
     protected function render ($action, $data, Request $request)
     {
-        $data['title'] = $this->getTitle($action);
-        return $this->view($this->makeTemplateName($action), $data, $request);
+        $data['title'] = $this->resource->title($action);
+        return $this->view($this->resource->template($action), $data, $request);
     }
 
-    protected function getTitle($action)
-    {
-        $prefix = implode('.', ['messages', 'titles']);
-
-        $transKey = $prefix . '.' . $this->getResourcePath($action);
-        $title = $this->trans($transKey, [
-            'resource_singular' => $this->getResourceSingular(),
-            'resource_plural' => $this->getResourcePlural(),
-        ]);
-
-        if ($title === false) {
-            $transKey = $prefix . '.' . $action;
-            $title = $this->trans($transKey, [
-                'resource_singular' => $this->getResourceSingular(),
-                'resource_plural' => $this->getResourcePlural(),
-            ]);
-        }
-
-
-        return $title;
-    }
-
-    protected function getForm(Request $request, $model = null, $formData = [])
+    protected function getForm (Request $request, $model = null, $formData = [])
     {
         $method = $model ? 'PUT' : 'POST';
         $params = $request->route()->parameters();
 
         if ($model) {
-            $params[$this->getResourceSlug()] = $model->getKey();
+            $params[$this->resource->getResourceName()] = $model->getKey();
             $action = 'update';
         } else {
             $action = 'store';
         }
-        $url = $this->makeUrl($action, $params);
+        $url = $this->resource->route($action, $params);
 
         if (!$url) {
             throw new \Exception('Failed to create \'' . $action . '\' Form action url (associated route name was not found in Router). If nested Resource, have you declared `getResourceNamespace()`?');
         }
 
-        $form = $this->form($this->getFormClassName(), compact('method', 'url', 'model'), $formData);
+        $form = $this->form($this->resource->form(), compact('method', 'url', 'model'), $formData);
 
         if ($values = $form->getData('values')) {
             foreach ($values as $key => $value) {
@@ -440,62 +331,26 @@ abstract class ResourceController extends AdminController
         $form->add('submit', 'form', [
             'label' => false,
             'class' => SubmitCancelForm::class,
-            'data' => ['action' => $method === 'POST' ? 'create' : 'update']
+            'data' => ['action' => $method === 'POST' ? 'create' : 'edit']
         ]);
 
         return $form;
-    }
-
-    protected function getResourcePath($action, $resource = null)
-    {
-        if (!$resource) {
-            $resource = $this->getResourceSlug();
-        }
-
-        return implode('.', array_filter([
-            $this->getResourceNamespace(),
-            $resource,
-            $action
-        ]));
-    }
-
-    protected function makeRouteName($action)
-    {
-        $name = $this->getResourcePath($action);
-        return $this->router->has($name) ? $name : null;
-    }
-
-    protected function makeTemplateName($action)
-    {
-        if (in_array($action, $this->views)) {
-            return $this->getResourcePath($action);
-        }
-        return 'radmin::' . implode('.', ['resource', $action]);
-    }
-
-    protected function makeUrl($action, $params = [])
-    {
-        $routeName = $this->makeRouteName($action);
-        if (!$routeName) {
-            return null;
-        }
-        return route($routeName, $params);
     }
 
     protected function redirectTo(Request $request, $model, $flash)
     {
         $params = $request->route()->parameters();
         if ($this->redirectTo === 'edit') {
-            $params[$this->getResourceSlug()] = $model->getKey();
+            $params[$this->resource->getResourceName()] = $model->getKey();
         } else {
-            unset($params[$this->getResourceSlug()]);
+            unset($params[$this->resource->getResourceName()]);
         }
 
         if (count($params)) {
-            return redirect($this->makeUrl($this->redirectTo, $params));
+            return redirect($this->resource->route($this->redirectTo, $params));
         }
 
-        return redirect($this->makeUrl($this->redirectTo))
+        return redirect($this->resource->route($this->redirectTo))
             ->with('flash_status', 'success')
             ->with('flash', $flash)
         ;
@@ -504,8 +359,8 @@ abstract class ResourceController extends AdminController
     protected function getIndexActions()
     {
         return [
-            'edit' => $this->makeRouteName('edit'),
-            'delete' => $this->makeRouteName('delete'),
+            'edit' => $this->resource->routeName('edit'),
+            'delete' => $this->resource->routeName('delete'),
         ];
     }
 

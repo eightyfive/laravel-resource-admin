@@ -2,7 +2,7 @@
 <div class="ui container">
   <div class="ui menu">
     {% for label,url in menu %}
-    <a href="{{ url }}" class="{% if label == resource_slug|capitalize %}active {% endif %}item">{{ label }}</a>
+    <a href="{{ url }}" class="{% if label == resource.name|capitalize %}active {% endif %}item">{{ label }}</a>
     {% endfor %}
     <div class="right menu">
       <div class="item">

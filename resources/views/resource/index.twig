@@ -15,10 +15,7 @@
   {% set _to = min(models.total, models.currentPage * models.perPage) %}
 {% endif %}
 
-{% block meta_title %}
-  {{ title }}
-{% endblock %}
-
+{% block meta_title title %}
 
 {% block content %}
   {% if showTitle %}
@@ -27,6 +24,8 @@
     {% if isPaginator %}
       <span class="ui horizontal label">{{ _from }}–{{ _to }} of {{ models.total }}</span>
     {% endif %}
+    <a href="{{ urls.create }}" class="ui right floated small button">
+      {{ trans('radmin::messages.btn_create_resource', {resource: resource.singular}) }}</a>
   </h1>
   {% endif %}
   {% if models|length %}
@@ -37,7 +36,7 @@
   {% else %}
   <div class="ui warning message">
     <div class="header">
-      {{ trans('radmin::messages.no_resource_found', {resource_singular: resource_singular}) }}
+      {{ trans('radmin::messages.no_resource_found', {resource.singular: resource.singular}) }}
     </div>
   </div>
   {% endif %}
