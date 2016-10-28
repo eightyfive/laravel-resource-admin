@@ -99,11 +99,6 @@ abstract class ResourceController extends AdminController
         return config('radmin.namespaces.forms') . $this->getModelShortName() . 'Form';
     }
 
-    protected function getModelClassName ()
-    {
-        return config('radmin.namespaces.models') . $this->getModelShortName();
-    }
-
     protected function getResourceNamespace ()
     {
         return implode('.', $this->getNamespace());
@@ -171,6 +166,8 @@ abstract class ResourceController extends AdminController
      */
     public function index (Request $request)
     {
+        $this->authorize('view', $this->getModelClassName());
+
         $orderBy = $request->has('order') ? $request->input('order') : $this->orderBy;
         $orderDir = $request->input('dir') ? $request->input('dir') : $this->orderDir;
 
@@ -245,7 +242,7 @@ abstract class ResourceController extends AdminController
         $this->afterCreate($model, $request);
         $this->afterSave($model, $request);
 
-        $flash = $this->trans('messages.success.store', [':resource' => $this->getResourceToString($model)]);
+        $flash = $this->trans('messages.success.store', ['resource' => $this->getResourceToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -312,7 +309,7 @@ abstract class ResourceController extends AdminController
         // After
         $this->afterSave($model, $request);
 
-        $flash = $this->trans('messages.success.update', [':resource' => $this->getResourceToString($model)]);
+        $flash = $this->trans('messages.success.update', ['resource' => $this->getResourceToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -356,7 +353,7 @@ abstract class ResourceController extends AdminController
             return redirect()->back();
         }
 
-        $flash = $this->trans('messages.success.destroy', [':resource' => $this->getResourceToString($model)]);
+        $flash = $this->trans('messages.success.destroy', ['resource' => $this->getResourceToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -508,7 +505,7 @@ abstract class ResourceController extends AdminController
     {
         return [
             'edit' => $this->makeRouteName('edit'),
-            'delete' => $this->makeRouteName('destroy'),
+            'delete' => $this->makeRouteName('delete'),
         ];
     }
 

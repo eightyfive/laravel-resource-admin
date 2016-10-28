@@ -26,10 +26,20 @@ abstract class AdminController extends Controller
 
     protected function getMenu (Request $request)
     {
+        $user = $request->user();
         $menu = [];
-        foreach (config('radmin.menu') as $text => $route) {
-            $menu[$text] = route($route);
+        foreach (config('radmin.menu') as $resource => $route) {
+            if ($user->can('view', $this->getModelClassName($resource))) {
+                $menu[trans('radmin::messages.menu.' . $resource)] = route($route);
+            }
         }
         return $menu;
+    }
+
+    protected function getModelClassName ($resource = null)
+    {
+        $shortName = $resource ? ucfirst(camel_case($resource)) : $this->getModelShortName();
+
+        return config('radmin.namespaces.models') . $shortName;
     }
 }

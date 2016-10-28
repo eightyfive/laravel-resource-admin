@@ -23,4 +23,7 @@ return [
     'btn_cancel' => 'Cancel',
     'delete_header' => 'Delete :resource?',
     'delete_lead' => 'Please confirm deletion.',
+    'menu' => [
+        // 'user' => 'Users'
+    ]
 ];

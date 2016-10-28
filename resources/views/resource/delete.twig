@@ -6,9 +6,9 @@
   </h1>
   <div class="ui error message">
     <div class="header">
-      {{ trans('radmin::messages.delete_header', {resource: resource_to_string}) }}
+      {{ trans('radmin::messages.delete_header', {resource: resource_to_string})|raw }}
     </div>
-    {{ trans('radmin::messages.delete_lead') }}
+    <p>{{ trans('radmin::messages.delete_lead') }}</p>
   </div>
   {{ form(form)|raw }}
 {% endblock %}

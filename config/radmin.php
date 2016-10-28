@@ -2,7 +2,7 @@
 
 return [
     'menu' => [
-        // 'Users' => 'admin.user.index'
+        // 'user' => 'admin.user.index',
     ],
     'namespaces' => [
         'controllers' => 'App\\Http\\Controllers\\',
