@@ -1,14 +1,16 @@
 <?php
 namespace Eyf\RAdmin;
 
-use Eyf\RAdmin\Http\Controllers\ResourceController;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
+//
+use Eyf\RAdmin\Http\Controllers\ResourceController;
 
 class ResourceService
 {
     protected $router;
     protected $controller;
-    protected $request;
+    protected $models;
     //
     protected $modelShortName;
     protected $breadcrumbs;
@@ -27,12 +29,7 @@ class ResourceService
 
     public function setRequest (Request $request)
     {
-        $this->request = $request;
-    }
-
-    protected function getName ()
-    {
-        return snake_case($this->getModelShortName());
+        $this->models = $request->route()->parameters();
     }
 
     protected function getNamespace ()
@@ -43,7 +40,7 @@ class ResourceService
     protected function getFullname ($action, $resource = null)
     {
         if (!$resource) {
-            $resource = $this->getName();
+            $resource = $this->name();
         }
 
         return implode('.', array_filter([
@@ -86,9 +83,19 @@ class ResourceService
         return $this->namespace;
     }
 
+    protected function getModel ($name)
+    {
+        return isset($this->models[$name]) ? $this->models[$name] : null;
+    }
+
     /**
      * Public API
      */
+    public function name ()
+    {
+        return snake_case($this->getModelShortName());
+    }
+
     public function modelClassName ($resource = null)
     {
         $shortName = $resource ? ucfirst(camel_case($resource)) : $this->getModelShortName();
@@ -127,7 +134,7 @@ class ResourceService
     public function model ()
     {
         if (!isset($this->model)) {
-            $model = $this->request->route($this->getName());
+            $model = $this->getModel($this->name());
             if (!$model) {
                 $modelClassName = $this->modelClassName();
                 $model = new $modelClassName;
@@ -167,7 +174,7 @@ class ResourceService
 
     public function template ($action)
     {
-        if (in_array($action, $this->views)) {
+        if (in_array($action, $this->controller->views)) {
             return $this->getFullname($action);
         }
         return 'radmin::' . implode('.', ['resource', $action]);
@@ -175,10 +182,22 @@ class ResourceService
 
     public function route ($action, $params = [])
     {
-        $name = $this->makeRouteName($action);
+        $name = $this->routeName($action);
         if (!$name) {
             return null;
         }
         return route($name, $params);
+    }
+
+    public function trans ($key, array $data)
+    {
+        $transKey = 'radmin::' . $key;
+        $trans = trans($transKey, $data);
+
+        if ($trans === $transKey) {
+            return false;
+        }
+
+        return $trans;
     }
 }

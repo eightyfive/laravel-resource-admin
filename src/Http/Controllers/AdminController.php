@@ -4,6 +4,8 @@ namespace Eyf\RAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+//
+use Eyf\RAdmin\ResourceService;
 
 abstract class AdminController extends Controller
 {
@@ -38,7 +40,7 @@ abstract class AdminController extends Controller
         $user = $request->user();
         $menu = [];
         foreach (config('radmin.menu') as $resource => $route) {
-            if ($user->can('view', $this->getModelClassName($resource))) {
+            if ($user->can('view', $this->resource->modelClassName($resource))) {
                 $menu[trans('radmin::messages.menu.' . $resource)] = route($route);
             }
         }

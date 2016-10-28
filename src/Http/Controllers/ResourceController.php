@@ -5,9 +5,9 @@ namespace Eyf\RAdmin\Http\Controllers;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Router;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
 //
 use Eyf\RAdmin\Forms\DeleteForm;
@@ -18,12 +18,12 @@ abstract class ResourceController extends AdminController
 {
     use FormBuilderTrait, AuthorizesRequests;
 
-    protected $redirectTo = 'index';
-    protected $orderBy    = 'updated_at';
-    protected $orderDir   = 'desc';
-    protected $perPage    = 10;
-    protected $columns    = [];
-    protected $views      = [];
+    public $redirectTo = 'index';
+    public $orderBy    = 'updated_at';
+    public $orderDir   = 'desc';
+    public $perPage    = 10;
+    public $columns    = [];
+    public $views      = [];
 
     public function __construct(ResourceService $resource)
     {
@@ -39,11 +39,6 @@ abstract class ResourceController extends AdminController
 
             return $response;
         });
-    }
-
-    public function getResourceToString ($model)
-    {
-        return $this->resource->singular() . ' <strong>#' . $model->id . '</strong>';
     }
 
     protected function before (Request $request)
@@ -139,7 +134,7 @@ abstract class ResourceController extends AdminController
                 ->withErrors($form->getErrors())
                 ->withInput()
                 ->with('flash_status', 'error')
-                ->with('flash', $this->trans('messages.errors.store'))
+                ->with('flash', $this->resource->trans('messages.errors.store'))
             ;
         }
 
@@ -149,7 +144,7 @@ abstract class ResourceController extends AdminController
         $this->afterCreate($model, $request);
         $this->afterSave($model, $request);
 
-        $flash = $this->trans('messages.success.store', ['resource' => $this->getResourceToString($model)]);
+        $flash = $this->resource->trans('messages.success.store', ['resource' => $this->modelToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -206,7 +201,7 @@ abstract class ResourceController extends AdminController
                 ->withErrors($form->getErrors())
                 ->withInput()
                 ->with('flash_status', 'error')
-                ->with('flash', $this->trans('messages.errors.update'))
+                ->with('flash', $this->resource->trans('messages.errors.update'))
             ;
         }
 
@@ -216,7 +211,7 @@ abstract class ResourceController extends AdminController
         // After
         $this->afterSave($model, $request);
 
-        $flash = $this->trans('messages.success.update', ['resource' => $this->getResourceToString($model)]);
+        $flash = $this->resource->trans('messages.success.update', ['resource' => $this->modelToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -260,7 +255,7 @@ abstract class ResourceController extends AdminController
             return redirect()->back();
         }
 
-        $flash = $this->trans('messages.success.destroy', ['resource' => $this->getResourceToString($model)]);
+        $flash = $this->resource->trans('messages.success.destroy', ['resource' => $this->modelToString($model)]);
 
         return $this->redirectTo($request, $model, $flash);
     }
@@ -269,15 +264,11 @@ abstract class ResourceController extends AdminController
     {
         $view = parent::view($template, $data, $request);
 
-        if (isset($view['model'])) {
-            $view->with('resource_to_string', $this->getResourceToString($view['model']));
-        }
-
         $routeParams = $request->route()->parameters();
 
-        $view->with([
+        $view->with(array_merge([
             'resource' => [
-                'name' => $this->resource->getResourceName(),
+                'name' => $this->resource->name(),
                 'singular' => $this->resource->singular(),
                 'plural' => $this->resource->plural(),
             ],
@@ -290,9 +281,11 @@ abstract class ResourceController extends AdminController
                 'create' => $this->resource->route('create', $routeParams),
             ],
             'routeParams' => $routeParams,
-        ]);
+        ], $routeParams));
 
-        $view->with($routeParams);
+        if (isset($view['model'])) {
+            $view->with('resource.to_string', $this->modelToString($view['model']));
+        }
 
         return $view;
     }
@@ -303,13 +296,19 @@ abstract class ResourceController extends AdminController
         return $this->view($this->resource->template($action), $data, $request);
     }
 
+    protected function modelToString (Model $model)
+    {
+        $name = isset($model->name) ? $model->name : ('#' . $model->id);
+        return $this->resource->singular() . ' <strong>' . $name . '</strong>';
+    }
+
     protected function getForm (Request $request, $model = null, $formData = [])
     {
         $method = $model ? 'PUT' : 'POST';
         $params = $request->route()->parameters();
 
         if ($model) {
-            $params[$this->resource->getResourceName()] = $model->getKey();
+            $params[$this->resource->name()] = $model->getKey();
             $action = 'update';
         } else {
             $action = 'store';
@@ -337,13 +336,14 @@ abstract class ResourceController extends AdminController
         return $form;
     }
 
-    protected function redirectTo(Request $request, $model, $flash)
+    protected function redirectTo (Request $request, $model, $flash)
     {
         $params = $request->route()->parameters();
+
         if ($this->redirectTo === 'edit') {
-            $params[$this->resource->getResourceName()] = $model->getKey();
+            $params[$this->resource->name()] = $model->getKey();
         } else {
-            unset($params[$this->resource->getResourceName()]);
+            unset($params[$this->resource->name()]);
         }
 
         if (count($params)) {
@@ -356,7 +356,7 @@ abstract class ResourceController extends AdminController
         ;
     }
 
-    protected function getIndexActions()
+    protected function getIndexActions ()
     {
         return [
             'edit' => $this->resource->routeName('edit'),
@@ -364,7 +364,7 @@ abstract class ResourceController extends AdminController
         ];
     }
 
-    protected function beforeSave(Request $request)
+    protected function beforeSave (Request $request)
     {
         $params = $request->all();
 
@@ -375,25 +375,13 @@ abstract class ResourceController extends AdminController
         }
     }
 
-    protected function afterSave($model, Request $request)
+    protected function afterSave ($model, Request $request)
     {
         //
     }
 
-    protected function afterCreate($model, Request $request)
+    protected function afterCreate ($model, Request $request)
     {
         //
-    }
-
-    protected function trans($key, array $data)
-    {
-        $transKey = 'radmin::' . $key;
-        $trans = trans($transKey, $data);
-
-        if ($trans === $transKey) {
-            return false;
-        }
-
-        return $trans;
     }
 }
