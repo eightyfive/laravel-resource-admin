@@ -10,7 +10,7 @@ abstract class FormHelper extends Form
     protected $transNamespace = 'radmin::forms';
     protected $translate = null;
 
-    protected $fields = [];
+    protected $inputs = [];
 
     protected $optionals = [];
 
@@ -28,7 +28,7 @@ abstract class FormHelper extends Form
 
     public function buildForm()
     {
-        foreach ($this->fields as $attr => $type) {
+        foreach ($this->inputs as $attr => $type) {
             $options = isset($this->options[$attr]) ? $this->options[$attr] : [];
             $isRequired = !in_array($attr, $this->optionals);
 
