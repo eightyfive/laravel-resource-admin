@@ -39,8 +39,12 @@ abstract class AdminController extends Controller
     {
         $user = $request->user();
         $menu = [];
+
         foreach (config('radmin.menu') as $resource => $route) {
-            if ($user->can('view', $this->resource->modelClassName($resource))) {
+            $className = $this->resource->modelClassName($resource);
+            if (class_exists($className) && $user->can('view', $className)) {
+                $menu[trans('radmin::messages.menu.' . $resource)] = route($route);
+            } else {
                 $menu[trans('radmin::messages.menu.' . $resource)] = route($route);
             }
         }
