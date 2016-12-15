@@ -2,13 +2,11 @@
 
 {% block content %}
   {% if showField %}
-    {% set emptyVal = options.empty_value ? {'': options.empty_value} : null %}
-    {% if emptyVal %}
-      {% set choices = emptyVal|merge(options.choices) %}
+    {% if options.empty_value %}
+      {% set choices = {'': options.empty_value} + options.choices %}
     {% else %}
       {% set choices = options.choices %}
     {% endif %}
     {{ Form.select(name, choices, options.selected, options.attr)|raw }}
   {% endif %}
 {% endblock %}
-
