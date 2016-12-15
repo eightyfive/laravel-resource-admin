@@ -2,7 +2,7 @@
   function bootUi (ctx) {
     if (!ctx) ctx = document.body
 
-    $('.ui.dropdown', ctx).dropdown()
+    $('.ui.dropdown', ctx).dropdown({forceSelection: false})
     $('.ui.checkbox', ctx).checkbox()
     $('.tabular.menu .item', ctx).tab({history: true, historyType: 'hash'})
   }
