@@ -5,7 +5,7 @@
     <a href="{{ url }}" class="{% if label == resource.name|capitalize %}active {% endif %}item">{{ label }}</a>
     {% endfor %}
     <div class="right menu">
-      {{ Form.open({url: config_get('radmin.search_url'), class: 'item', id: 'searchForm'})|raw }}
+      {{ Form.open({url: config_get('radmin.search_url'), class: 'item', id: 'searchForm', method: 'GET'})|raw }}
         <div class="ui icon input">
           <input id="searchInput" name="q" type="text" placeholder="Search...">
           <i class="search link icon"></i>
