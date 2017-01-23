@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'search_url' => '/admin',
+    'search_url' => '/admin/search',
     'menu' => [
         // 'user' => 'admin.user.index',
     ],
