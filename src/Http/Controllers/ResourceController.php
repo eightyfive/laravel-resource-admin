@@ -284,7 +284,7 @@ abstract class ResourceController extends AdminController
         ], $routeParams));
 
         if (isset($view['model'])) {
-            $view->with('resource.to_string', $this->modelToString($view['model']));
+            $view->with('resource_to_string', $this->modelToString($view['model']));
         }
 
         return $view;
