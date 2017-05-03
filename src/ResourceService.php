@@ -189,7 +189,7 @@ class ResourceService
         return route($name, $params);
     }
 
-    public function trans ($key, array $data)
+    public function trans ($key, array $data = [])
     {
         $transKey = 'radmin::' . $key;
         $trans = trans($transKey, $data);
