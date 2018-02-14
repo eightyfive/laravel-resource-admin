@@ -1,7 +1,7 @@
 {
     "name": "eightyfive/laravel-resource-admin",
     "description": "Generic Admin controller & helpers for Laravel Resources",
-    "license": "None",
+    "license": "MIT",
     "authors": [
         {
             "name": "Benoit Sagols",
